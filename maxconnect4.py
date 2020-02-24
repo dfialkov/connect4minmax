@@ -9,16 +9,16 @@ from MaxConnect4Game import *
 
 def oneMoveGame(currentGame):
     if currentGame.pieceCount == 42:    # Is the board full already?
-        print 'BOARD FULL\n\nGame Over!\n'
+        print('BOARD FULL\n\nGame Over!\n')
         sys.exit(0)
 
     currentGame.aiPlay() # Make a move (only random is implemented)
 
-    print 'Game state after move:'
+    print('Game state after move:')
     currentGame.printGameBoard()
 
     currentGame.countScore()
-    print('Score: Player 1 = %d, Player 2 = %d\n' % (currentGame.player1Score, currentGame.player2Score))
+    print(('Score: Player 1 = %d, Player 2 = %d\n' % (currentGame.player1Score, currentGame.player2Score)))
 
     currentGame.printGameBoardToFile()
     currentGame.gameFile.close()
@@ -32,15 +32,15 @@ def interactiveGame(currentGame):
 def main(argv):
     # Make sure we have enough command-line arguments
     if len(argv) != 5:
-        print 'Four command-line arguments are needed:'
-        print('Usage: %s interactive [input_file] [computer-next/human-next] [depth]' % argv[0])
-        print('or: %s one-move [input_file] [output_file] [depth]' % argv[0])
+        print('Four command-line arguments are needed:')
+        print(('Usage: %s interactive [input_file] [computer-next/human-next] [depth]' % argv[0]))
+        print(('or: %s one-move [input_file] [output_file] [depth]' % argv[0]))
         sys.exit(2)
 
     game_mode, inFile = argv[1:3]
 
     if not game_mode == 'interactive' and not game_mode == 'one-move':
-        print('%s is an unrecognized game mode' % game_mode)
+        print(('%s is an unrecognized game mode' % game_mode))
         sys.exit(2)
 
     currentGame = maxConnect4Game() # Create a game
@@ -57,14 +57,14 @@ def main(argv):
     currentGame.currentTurn = int(file_lines[-1][0])
     currentGame.gameFile.close()
 
-    print '\nMaxConnect-4 game\n'
-    print 'Game state before move:'
+    print('\nMaxConnect-4 game\n')
+    print('Game state before move:')
     currentGame.printGameBoard()
 
     # Update a few game variables based on initial state and print the score
     currentGame.checkPieceCount()
     currentGame.countScore()
-    print('Score: Player 1 = %d, Player 2 = %d\n' % (currentGame.player1Score, currentGame.player2Score))
+    print(('Score: Player 1 = %d, Player 2 = %d\n' % (currentGame.player1Score, currentGame.player2Score)))
 
     if game_mode == 'interactive':
         interactiveGame(currentGame) # Be sure to pass whatever else you need from the command line

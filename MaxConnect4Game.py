@@ -24,13 +24,13 @@ class maxConnect4Game:
 
     # Output current game status to console
     def printGameBoard(self):
-        print ' -----------------'
+        print(' -----------------')
         for i in range(6):
-            print ' |',
+            print(' |', end=' ')
             for j in range(7):
-                print('%d' % self.gameBoard[i][j]),
-            print '| '
-        print ' -----------------'
+                print(('%d' % self.gameBoard[i][j]), end=' ')
+            print('| ')
+        print(' -----------------')
 
     # Output current game status to file
     def printGameBoardToFile(self):
@@ -54,7 +54,7 @@ class maxConnect4Game:
         if not result:
             self.aiPlay()
         else:
-            print('\n\nmove %d: Player %d, column %d\n' % (self.pieceCount, self.currentTurn, randColumn+1))
+            print(('\n\nmove %d: Player %d, column %d\n' % (self.pieceCount, self.currentTurn, randColumn+1)))
             if self.currentTurn == 1:
                 self.currentTurn = 2
             elif self.currentTurn == 2:
