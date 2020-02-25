@@ -7,12 +7,12 @@
 import sys
 from MaxConnect4Game import *
 
-def oneMoveGame(currentGame):
+def oneMoveGame(currentGame, depth):
     if currentGame.pieceCount == 42:    # Is the board full already?
         print('BOARD FULL\n\nGame Over!\n')
         sys.exit(0)
 
-    currentGame.aiPlay() # Make a move (only random is implemented)
+    currentGame.aiPlay(depth) # Make a move (only random is implemented)
 
     print('Game state after move:')
     currentGame.printGameBoard()
@@ -75,7 +75,7 @@ def main(argv):
             currentGame.gameFile = open(outFile, 'w')
         except:
             sys.exit('Error opening output file.')
-        oneMoveGame(currentGame) # Be sure to pass any other arguments from the command line you might need.
+        oneMoveGame(currentGame, int(argv[4])) # Be sure to pass any other arguments from the command line you might need.
 
 
 if __name__ == '__main__':

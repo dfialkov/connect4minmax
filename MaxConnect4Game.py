@@ -7,7 +7,7 @@
 from copy import copy
 import random
 import sys
-
+from tree import TreeNode
 class maxConnect4Game:
     def __init__(self):
         self.gameBoard = [[0 for i in range(7)] for j in range(6)]
@@ -48,18 +48,68 @@ class maxConnect4Game:
                     return 1
 
     # The AI section. Currently plays randomly.
-    def aiPlay(self):
-        randColumn = random.randrange(0,7)
-        result = self.playPiece(randColumn)
-        if not result:
-            self.aiPlay()
+    def aiPlay(self, depth):
+        #A list containing every possible next game state.
+        options = dict()
+        #Put every current valid move into consideration
+        for i in self.getFreeCols():
+            options[i] = self
+            options[i].playPiece(i)
+        #Run a minmax search on every valid move
+        for i in options.keys():
+            options[i] = self.minimax(options[i], depth, -9999, 9999, True)
+        bestValue = -10000
+        chosenColumn = 2
+        for i in options.keys():
+            if options[i] > bestValue :
+                bestValue = options[i]
+                chosenColumn = i
+        self.playPiece(chosenColumn)
+        print(('\n\nmove %d: Player %d, column %d\n' % (self.pieceCount, self.currentTurn, chosenColumn+1)))
+        if self.currentTurn == 1:
+            self.currentTurn = 2
+        elif self.currentTurn == 2:
+            self.currentTurn = 1
+        
+    #A minimax search using pruning and depth limiting to evaluate the utility of a play
+    def minimax(self, position, depth, alpha, beta, maximizingPlayer):
+        if depth == 0 or position.getFreeCols() == 0:
+            position.countScore()
+            return position.player1Score
+        if maximizingPlayer:
+            maxEval = -9999
+            options = dict()
+            for i in position.getFreeCols():
+                options[i] = position
+                options[i].playPiece(i)
+            for i in options.keys():
+                eval = self.minimax(options[i],depth-1,alpha,beta,False)
+                if eval > maxEval : maxEval = eval
+                if eval > alpha : alpha = eval
+                if beta <= alpha:
+                    break
+            return maxEval
         else:
-            print(('\n\nmove %d: Player %d, column %d\n' % (self.pieceCount, self.currentTurn, randColumn+1)))
-            if self.currentTurn == 1:
-                self.currentTurn = 2
-            elif self.currentTurn == 2:
-                self.currentTurn = 1
+            minEval = 9999
+            options = dict()
+            for i in position.getFreeCols():
+                options[i] = position
+                options[i].playPiece(i)
+                eval = self.minimax(options[i],depth-1,alpha,beta,True)
+                if eval < minEval : minEval = eval
+                if eval < beta : beta = eval
+                if beta <= alpha:
+                    break
+            return minEval
 
+    #Gives a list of ints corresponding to the columns that are valid moves
+    def getFreeCols(self):
+        freeCols = []
+        for i in range(7):
+            if self.gameBoard[0][i] == 0:
+                freeCols.append(i)
+        return freeCols  
+        
     # Calculate the number of 4-in-a-row each player has
     def countScore(self):
         self.player1Score = 0;
