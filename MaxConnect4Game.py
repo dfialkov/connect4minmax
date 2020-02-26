@@ -5,11 +5,14 @@
 # Written to be Python 2.4 compatible for omega
 
 from copy import copy
+from copy import deepcopy
 import random
 import sys
+import time
 from tree import TreeNode
+
 class maxConnect4Game:
-    def __init__(self):
+    def __init__(self, newBoard = [[0 for i in range(7)] for j in range(6)]):
         self.gameBoard = [[0 for i in range(7)] for j in range(6)]
         self.currentTurn = 1
         self.player1Score = 0
@@ -45,15 +48,20 @@ class maxConnect4Game:
                 if not self.gameBoard[i][column]:
                     self.gameBoard[i][column] = self.currentTurn
                     self.pieceCount += 1
+                    if self.currentTurn == 1:
+                        self.currentTurn = 2
+                    elif self.currentTurn == 2:
+                        self.currentTurn = 1
                     return 1
 
     # The AI section. Currently plays randomly.
     def aiPlay(self, depth):
+        now = time.time()
         #A list containing every possible next game state.
         options = dict()
         #Put every current valid move into consideration
         for i in self.getFreeCols():
-            options[i] = self
+            options[i] = maxConnect4Game(deepcopy(self.gameBoard))
             options[i].playPiece(i)
         #Run a minmax search on every valid move
         for i in options.keys():
@@ -66,21 +74,20 @@ class maxConnect4Game:
                 chosenColumn = i
         self.playPiece(chosenColumn)
         print(('\n\nmove %d: Player %d, column %d\n' % (self.pieceCount, self.currentTurn, chosenColumn+1)))
-        if self.currentTurn == 1:
-            self.currentTurn = 2
-        elif self.currentTurn == 2:
-            self.currentTurn = 1
+        print("Execution time: " + str(time.time() - now))
+        
         
     #A minimax search using pruning and depth limiting to evaluate the utility of a play
     def minimax(self, position, depth, alpha, beta, maximizingPlayer):
-        if depth == 0 or position.getFreeCols() == 0:
+        #eval
+        if depth == 0 or len(position.getFreeCols()) == 0:
             position.countScore()
-            return position.player1Score
+            return position.player1Score - position.player2Score
         if maximizingPlayer:
             maxEval = -9999
             options = dict()
             for i in position.getFreeCols():
-                options[i] = position
+                options[i] = maxConnect4Game(deepcopy(position.gameBoard))#deepcopy(position)
                 options[i].playPiece(i)
             for i in options.keys():
                 eval = self.minimax(options[i],depth-1,alpha,beta,False)
@@ -93,7 +100,7 @@ class maxConnect4Game:
             minEval = 9999
             options = dict()
             for i in position.getFreeCols():
-                options[i] = position
+                options[i] = maxConnect4Game(deepcopy(position.gameBoard))#deepcopy(position)
                 options[i].playPiece(i)
                 eval = self.minimax(options[i],depth-1,alpha,beta,True)
                 if eval < minEval : minEval = eval

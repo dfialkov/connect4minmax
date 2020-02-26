@@ -1,5 +1,5 @@
-def testFunction(test):
-    test = 2
+def testFunction(test = 1):
+    
     return test
-print(testFunction(1))
+print(testFunction(2))
     
