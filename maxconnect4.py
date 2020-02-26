@@ -24,8 +24,20 @@ def oneMoveGame(currentGame, depth):
     currentGame.gameFile.close()
 
 
-def interactiveGame(currentGame):
-    # Fill me in
+def interactiveGame(currentGame,depth,computerNext):
+    # while(currentGame.pieceCount < 42):
+    #     if(computerNext):
+    #         currentGame.aiPlay(depth)
+    #         currentGame.printGameBoardToFile()
+    #         currentGame.printGameBoard()
+    #         currentGame.countScore()
+    #         print(('Score: Player 1 = %d, Player 2 = %d\n' % (currentGame.player1Score, currentGame.player2Score)))
+    #     else:
+    #         playerMove = input("Enter your move")
+    #         currentGame.
+    sys.exit("Game finished")
+
+    
     sys.exit('Interactive mode is currently not implemented')
 
 
@@ -67,7 +79,13 @@ def main(argv):
     print(('Score: Player 1 = %d, Player 2 = %d\n' % (currentGame.player1Score, currentGame.player2Score)))
 
     if game_mode == 'interactive':
-        interactiveGame(currentGame) # Be sure to pass whatever else you need from the command line
+        pass
+        # try:
+        #     computerNext = (argv[3] == "computer-next")
+        #     interactiveGame(currentGame,int(argv[4]),computerNext)
+        # except:
+        #     sys.exit('Error opening output file.')
+        
     else: # game_mode == 'one-move'
         # Set up the output file
         outFile = argv[3]

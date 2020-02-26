@@ -9,12 +9,11 @@ from copy import deepcopy
 import random
 import sys
 import time
-from tree import TreeNode
 
 class maxConnect4Game:
-    def __init__(self, newBoard = [[0 for i in range(7)] for j in range(6)]):
-        self.gameBoard = [[0 for i in range(7)] for j in range(6)]
-        self.currentTurn = 1
+    def __init__(self, newBoard = [[0 for i in range(7)] for j in range(6)],nextPlayer = 1):
+        self.gameBoard = newBoard
+        self.currentTurn = nextPlayer
         self.player1Score = 0
         self.player2Score = 0
         self.pieceCount = 0
@@ -41,6 +40,19 @@ class maxConnect4Game:
             self.gameFile.write(''.join(str(col) for col in row) + '\r\n')
         self.gameFile.write('%s\r\n' % str(self.currentTurn))
 
+    #Output current game status to computer.txt
+    def printGameBoardToComputer(self):
+        computer = open("computer.txt",'w')
+        for row in self.gameBoard:
+            computer.write(''.join(str(col) for col in row) + '\r\n')
+        computer.write('%s\r\n' % str(self.currentTurn))
+    #Output current game status to human.txt
+    def printGameBoardToHuman(self):
+        human = open("human.txt",'w')
+        for row in self.gameBoard:
+            human.write(''.join(str(col) for col in row) + '\r\n')
+        human.write('%s\r\n' % str(self.currentTurn))
+
     # Place the current player's piece in the requested column
     def playPiece(self, column):
         if not self.gameBoard[0][column]:
@@ -54,43 +66,46 @@ class maxConnect4Game:
                         self.currentTurn = 1
                     return 1
 
-    # The AI section. Currently plays randomly.
+    # The AI section.
     def aiPlay(self, depth):
-        now = time.time()
         #A list containing every possible next game state.
         options = dict()
         #Put every current valid move into consideration
         for i in self.getFreeCols():
-            options[i] = maxConnect4Game(deepcopy(self.gameBoard))
+            options[i] = maxConnect4Game(deepcopy(self.gameBoard),deepcopy(self.currentTurn))
             options[i].playPiece(i)
-        #Run a minmax search on every valid move
+        #Run a minmax search on every valid move. Since I generated these outside of the minimax loop, it's now the minimizer's turn
         for i in options.keys():
-            options[i] = self.minimax(options[i], depth, -9999, 9999, True)
+            options[i] = self.minimax(options[i], depth, -9999, 9999, False,deepcopy(self.currentTurn))
         bestValue = -10000
         chosenColumn = 2
         for i in options.keys():
+            print(options[i])
             if options[i] > bestValue :
                 bestValue = options[i]
                 chosenColumn = i
-        self.playPiece(chosenColumn)
         print(('\n\nmove %d: Player %d, column %d\n' % (self.pieceCount, self.currentTurn, chosenColumn+1)))
-        print("Execution time: " + str(time.time() - now))
+        self.playPiece(chosenColumn)
+        
         
         
     #A minimax search using pruning and depth limiting to evaluate the utility of a play
-    def minimax(self, position, depth, alpha, beta, maximizingPlayer):
-        #eval
+    def minimax(self, position, depth, alpha, beta, maximizingPlayer,myNumber):
         if depth == 0 or len(position.getFreeCols()) == 0:
-            position.countScore()
-            return position.player1Score - position.player2Score
+            if(myNumber == 1):
+                position.countScore()
+                return position.player1Score - position.player2Score
+            else:
+                position.countScore()
+                return position.player2Score - position.player1Score
         if maximizingPlayer:
             maxEval = -9999
             options = dict()
             for i in position.getFreeCols():
-                options[i] = maxConnect4Game(deepcopy(position.gameBoard))#deepcopy(position)
+                options[i] = maxConnect4Game(deepcopy(position.gameBoard),deepcopy(position.currentTurn))
                 options[i].playPiece(i)
             for i in options.keys():
-                eval = self.minimax(options[i],depth-1,alpha,beta,False)
+                eval = self.minimax(options[i],depth-1,alpha,beta,False,myNumber)
                 if eval > maxEval : maxEval = eval
                 if eval > alpha : alpha = eval
                 if beta <= alpha:
@@ -100,9 +115,10 @@ class maxConnect4Game:
             minEval = 9999
             options = dict()
             for i in position.getFreeCols():
-                options[i] = maxConnect4Game(deepcopy(position.gameBoard))#deepcopy(position)
+                options[i] = maxConnect4Game(deepcopy(position.gameBoard),deepcopy(position.currentTurn))
                 options[i].playPiece(i)
-                eval = self.minimax(options[i],depth-1,alpha,beta,True)
+            for i in options.keys():
+                eval = self.minimax(options[i],depth-1,alpha,beta,True,myNumber)
                 if eval < minEval : minEval = eval
                 if eval < beta : beta = eval
                 if beta <= alpha:
@@ -119,8 +135,8 @@ class maxConnect4Game:
         
     # Calculate the number of 4-in-a-row each player has
     def countScore(self):
-        self.player1Score = 0;
-        self.player2Score = 0;
+        self.player1Score = 0
+        self.player2Score = 0
 
         # Check horizontally
         for row in self.gameBoard:
