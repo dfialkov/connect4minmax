@@ -25,16 +25,34 @@ def oneMoveGame(currentGame, depth):
 
 
 def interactiveGame(currentGame,depth,computerNext):
-    # while(currentGame.pieceCount < 42):
-    #     if(computerNext):
-    #         currentGame.aiPlay(depth)
-    #         currentGame.printGameBoardToFile()
-    #         currentGame.printGameBoard()
-    #         currentGame.countScore()
-    #         print(('Score: Player 1 = %d, Player 2 = %d\n' % (currentGame.player1Score, currentGame.player2Score)))
-    #     else:
-    #         playerMove = input("Enter your move")
-    #         currentGame.
+    while(currentGame.pieceCount < 42):
+        #Computer moves first if necessary
+        if(computerNext):
+            currentGame.aiPlay(depth)
+            currentGame.printGameBoardToComputer()
+            currentGame.printGameBoard()
+            currentGame.countScore()
+            print(('Score: Player 1 = %d, Player 2 = %d\n' % (currentGame.player1Score, currentGame.player2Score)))
+            computerNext = False
+        #Hold the player in place until they make a valid input
+        while(True):
+            playerMove = input("Enter your move:\n")
+            try:
+                chosenCol = int(playerMove)
+                
+            except:
+                print("Please enter an integer")
+                continue
+            if chosenCol in currentGame.getFreeCols():
+                currentGame.playPiece(int(playerMove))
+                currentGame.printGameBoard()
+                currentGame.printGameBoardToHuman()
+                currentGame.countScore()
+                print(('Score: Player 1 = %d, Player 2 = %d\n' % (currentGame.player1Score, currentGame.player2Score)))
+                computerNext = True
+                break
+            print("That column is full. Please choose another")
+        
     sys.exit("Game finished")
 
     
@@ -79,12 +97,9 @@ def main(argv):
     print(('Score: Player 1 = %d, Player 2 = %d\n' % (currentGame.player1Score, currentGame.player2Score)))
 
     if game_mode == 'interactive':
-        pass
-        # try:
-        #     computerNext = (argv[3] == "computer-next")
-        #     interactiveGame(currentGame,int(argv[4]),computerNext)
-        # except:
-        #     sys.exit('Error opening output file.')
+        computerNext = (argv[3] == "computer-next")
+        interactiveGame(currentGame,int(argv[4]),computerNext)
+        
         
     else: # game_mode == 'one-move'
         # Set up the output file

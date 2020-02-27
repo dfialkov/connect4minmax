@@ -42,13 +42,19 @@ class maxConnect4Game:
 
     #Output current game status to computer.txt
     def printGameBoardToComputer(self):
-        computer = open("computer.txt",'w')
+        try:
+            computer = open("computer.txt",'w+')
+        except:
+            sys.exit("Error opening computer output file")
         for row in self.gameBoard:
             computer.write(''.join(str(col) for col in row) + '\r\n')
         computer.write('%s\r\n' % str(self.currentTurn))
     #Output current game status to human.txt
     def printGameBoardToHuman(self):
-        human = open("human.txt",'w')
+        try:
+            human = open("human.txt",'w+')
+        except:
+            sys.exit("Error opening human output file")
         for row in self.gameBoard:
             human.write(''.join(str(col) for col in row) + '\r\n')
         human.write('%s\r\n' % str(self.currentTurn))
@@ -80,7 +86,6 @@ class maxConnect4Game:
         bestValue = -10000
         chosenColumn = 2
         for i in options.keys():
-            print(options[i])
             if options[i] > bestValue :
                 bestValue = options[i]
                 chosenColumn = i
