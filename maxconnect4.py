@@ -28,7 +28,8 @@ def interactiveGame(currentGame,depth,computerNext):
     while(currentGame.pieceCount < 42):
         #Computer moves first if necessary
         if(computerNext):
-            currentGame.aiPlay(depth)
+            #The depth parameter is 1 lower than the supplied depth due to the fact that a single layer of depth is explored outside of the minimax algorithm.
+            currentGame.aiPlay(depth - 1)
             currentGame.printGameBoardToComputer()
             currentGame.printGameBoard()
             currentGame.countScore()

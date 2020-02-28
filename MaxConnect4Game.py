@@ -93,7 +93,6 @@ class maxConnect4Game:
         self.playPiece(chosenColumn)
         
         
-        
     #A minimax search using pruning and depth limiting to evaluate the utility of a play
     def minimax(self, position, depth, alpha, beta, maximizingPlayer,myNumber):
         if depth == 0 or len(position.getFreeCols()) == 0:
